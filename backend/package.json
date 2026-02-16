@@ -17,11 +17,11 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "install": "^0.13.0",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.19.3",
     "multer": "^2.0.2",
     "npm": "^11.6.2",
     "pdf-parse": "^2.4.5",
     "pdfjs-dist": "^5.4.394"
-  },
-  "devDependencies": {}
+  }
 }
