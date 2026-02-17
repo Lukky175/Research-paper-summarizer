@@ -7,13 +7,13 @@ import "./Login.css";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();  // ✅ Add this line
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
   e.preventDefault();
 
   try {
-    const res = await fetch("http://localhost:5000/login", {
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -22,9 +22,10 @@ function Login() {
     const data = await res.json();
 
     if (res.ok && data.success) {
-      alert(data.message); // "Login successful"
-      localStorage.setItem("auth", "true");  // Save login flag (To avoid bypass wala bug)
-      navigate("/landingpage"); //It will Redirect only if backend says success
+      alert(data.message);
+      // Store JWT token
+      localStorage.setItem("token", data.token);
+      navigate("/landingpage");
     } else {
       alert(data.message || "Invalid credentials, Please Try Again.");
     }

@@ -1,15 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 
 function ProtectedRoute({ children }) {
-  const isAuth = localStorage.getItem("auth") === "true"; // check login flag
+  const [isValid, setIsValid] = useState(null);
 
-  if (!isAuth) {
-    // ❌ Not logged in — redirect to login page
-    return <Navigate to="/" replace />;
-  }
+  useEffect(() => {
+    const token = localStorage.getItem("token");
 
-  // ✅ Logged in — show the protected component
+    if (!token) {
+      setIsValid(false);
+      return;
+    }
+
+    fetch("http://localhost:5000/validate", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (res.ok) setIsValid(true);
+        else setIsValid(false);
+      })
+      .catch(() => setIsValid(false));
+  }, []);
+
+  if (isValid === null) return <div>Loading...</div>;
+
+  if (!isValid) return <Navigate to="/" replace />;
+
   return children;
 }
 

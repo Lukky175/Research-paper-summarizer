@@ -3,6 +3,24 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 const { GoogleGenAI } = require("@google/genai");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+
+
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+};
+
+
 
 const app = express();
 app.use(express.json());
@@ -38,32 +56,73 @@ let conversationHistory = []; // keeps last few user-model exchanges
 // --- Auth Routes ---
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
+
   try {
     const user = await User.findOne({ email });
-    if (!user)
-      return res.status(404).json({ success: false, message: "User not found" });
 
-    if (user.password === password)
-      return res.status(200).json({
-        success: true,
-        message: "Login successful",
-        user: { username: user.username, email: user.email },
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
       });
-    else
-      return res.status(401).json({ success: false, message: "Invalid password" });
+    }
+
+    console.log("Entered password:", password);
+    console.log("Stored hash:", user.password);
+
+    const isMatch = await bcrypt.compare(password.trim(), user.password);
+
+    console.log("Password match result:", isMatch);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid password",
+      });
+    }
+
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      token,
+      user: { username: user.username, email: user.email },
+    });
+
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    console.error("Login error:", err);
+    return res.status(500).json({
+      success: false,
+      error: err.message,
+    });
   }
 });
 
+
+
 app.post("/register", async (req, res) => {
   const { username, name, phone, email, password } = req.body;
+
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser)
       return res.status(400).json({ message: "Email already exists" });
 
-    const newUser = new User({ username, name, phone, email, password });
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new User({
+      username,
+      name,
+      phone,
+      email,
+      password: hashedPassword,
+    });
+
     await newUser.save();
 
     res.status(201).json({ message: "Registration successful" });
@@ -72,9 +131,13 @@ app.post("/register", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+// --- Token Validation Endpoint ---
+app.get("/validate", authenticateToken, (req, res) => {
+  res.status(200).json({ valid: true });
+});
 
 // --- Summarize Endpoint ---
-app.post("/summarize", async (req, res) => {
+app.post("/summarize", authenticateToken, async (req, res) => {
   try {
     const { prompt, text } = req.body;
     if (!text && !prompt) {

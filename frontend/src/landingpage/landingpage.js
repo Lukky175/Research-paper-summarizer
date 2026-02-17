@@ -1,13 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./landingpage.css";
 import SummaryDisplay from "./SummaryDisplay";
+import { useNavigate } from "react-router-dom";
 
-
-//Here I Imported PDF.js via CDN dynamically.
+// Here I Imported PDF.js via CDN dynamically.
 const pdfjsLibUrl = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js";
 const pdfWorkerUrl = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.worker.min.js";
 
 function LandingPage() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/");
+    }
+  }, [navigate]);
+
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [file, setFile] = useState(null);
@@ -44,7 +53,7 @@ function LandingPage() {
       text: trimmedInput,
       fileName: file ? file.name : null,
     };
-    setMessages((prevMessages) => [...prevMessages, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
 
     setInput("");
     const fileInput = document.getElementById("fileInput");
@@ -62,28 +71,37 @@ function LandingPage() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/summarize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt: trimmedInput,
-          text: extractedText,
-        }),
-      });
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/summarize`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            prompt: trimmedInput,
+            text: extractedText,
+          }),
+        }
+      );
 
       const data = await res.json();
+
       const aiMessage = {
         sender: "ai",
         text: data.summary || "No summary generated.",
       };
-      setMessages((prevMessages) => [...prevMessages, aiMessage]);
+
+      setMessages((prev) => [...prev, aiMessage]);
     } catch (err) {
       console.error("Fetch error:", err);
-      const errorMessage = {
-        sender: "ai",
-        text: "⚠️ Error connecting to backend.",
-      };
-      setMessages((prevMessages) => [...prevMessages, errorMessage]);
+      setMessages((prev) => [
+        ...prev,
+        { sender: "ai", text: "⚠️ Error connecting to backend." },
+      ]);
     }
   };
 
@@ -94,26 +112,28 @@ function LandingPage() {
 
         <div className="chat-window">
           {messages.map((msg, index) => (
-          <div
-          key={index}
-          className={`chat-bubble ${msg.sender === "user" ? "user" : "ai"}`}
-          >
-          {msg.fileName && <p className="file-attachment">📎 {msg.fileName}</p>}
+            <div
+              key={index}
+              className={`chat-bubble ${msg.sender === "user" ? "user" : "ai"}`}
+            >
+              {msg.fileName && (
+                <p className="file-attachment">📎 {msg.fileName}</p>
+              )}
 
-          {msg.sender === "ai" ? (
-            <SummaryDisplay summary={msg.text} />
-          ) : (
-            <p>{msg.text}</p>
-          )}
-        </div>
-      ))}
-
+              {msg.sender === "ai" ? (
+                <SummaryDisplay summary={msg.text} />
+              ) : (
+                <p>{msg.text}</p>
+              )}
+            </div>
+          ))}
         </div>
 
         <form className="chat-input-area" onSubmit={handleSend}>
           <label htmlFor="fileInput" className="file-label">
             📎
           </label>
+
           <input
             id="fileInput"
             type="file"
@@ -122,7 +142,9 @@ function LandingPage() {
             style={{ display: "none" }}
           />
 
-          {file && <span className="selected-file-name">{file.name}</span>}
+          {file && (
+            <span className="selected-file-name">{file.name}</span>
+          )}
 
           <input
             type="text"
@@ -136,8 +158,8 @@ function LandingPage() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={isExtracting}
-            className={file ? "input-with-file" : ""}
           />
+
           <button type="submit" disabled={isExtracting}>
             {isExtracting ? "⏳" : "➤"}
           </button>
