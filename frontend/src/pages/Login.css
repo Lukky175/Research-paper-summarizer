@@ -6,7 +6,7 @@ section.login-section {
     min-height: 100vh;
     width: 100%;
     background: url('/public/Wallpaper.jpeg') no-repeat center center/cover;
-    padding: 50px 0 0 0 ; /* Adjusted for navbar */
+    padding: 50px 0 0 0 ;
     box-sizing: border-box;
 }
 

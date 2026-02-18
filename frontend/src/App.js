@@ -1,9 +1,8 @@
-// ...existing code...
 import './App.css';
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./NavigationBar/Navbar"; // import Navbar page
-import Login from "./pages/Login"; // import Login page
+import Navbar from "./NavigationBar/Navbar";
+import Login from "./pages/Login";
 import Register from "./pages/Register";
 import LandingPage from './landingpage/landingpage';
 import ProtectedRoute from "./RouteProtection/ProtectedRoute.js";
