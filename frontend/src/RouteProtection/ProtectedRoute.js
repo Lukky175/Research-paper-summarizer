@@ -12,7 +12,7 @@ function ProtectedRoute({ children }) {
       return;
     }
 
-    fetch("http://localhost:5000/validate", {
+    fetch("/validate", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
