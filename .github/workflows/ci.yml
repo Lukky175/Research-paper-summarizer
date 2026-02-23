@@ -1,0 +1,66 @@
+name: CI - Build & Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout App Repo
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      # 2️⃣ Set Image Tag (Commit SHA)
+      - name: Set Image Tag
+        id: vars
+        run: echo "IMAGE_TAG=${GITHUB_SHA}" >> $GITHUB_ENV
+
+      # 3️⃣ Login to DockerHub
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 4️⃣ Build Frontend Image
+      - name: Build Frontend Image
+        run: |
+          docker build -t lukky175/research-summarizer-frontend:${IMAGE_TAG} ./frontend
+
+      # 5️⃣ Push Frontend Image
+      - name: Push Frontend Image
+        run: |
+          docker push lukky175/research-summarizer-frontend:${IMAGE_TAG}
+
+      # 6️⃣ Build Backend Image
+      - name: Build Backend Image
+        run: |
+          docker build -t lukky175/research-summarizer-backend:${IMAGE_TAG} ./backend
+
+      # 7️⃣ Push Backend Image
+      - name: Push Backend Image
+        run: |
+          docker push lukky175/research-summarizer-backend:${IMAGE_TAG}
+
+      # 8️⃣ Clone K8s Repo
+      - name: Clone K8s Repo
+        run: |
+          git clone https://x-access-token:${{ secrets.K8S_REPO_TOKEN }}@github.com/Lukky175/research-summarizer-k8s.git
+          cd research-summarizer-k8s
+
+          # Update frontend image
+          sed -i "s|research-summarizer-frontend:.*|research-summarizer-frontend:${IMAGE_TAG}|g" frontend/frontend-deployment.yaml
+
+          # Update backend image
+          sed -i "s|research-summarizer-backend:.*|research-summarizer-backend:${IMAGE_TAG}|g" backend/backend-deployment.yaml
+
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+
+          git add .
+          git commit -m "Update images to ${IMAGE_TAG}"
+          git push
