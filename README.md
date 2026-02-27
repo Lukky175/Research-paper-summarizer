@@ -1,5 +1,6 @@
 This Version: -> 
-Instead of /validate/localhost we now only use /validate to be able to support app on Domain
+Fixed API Calling in Login.js / register.js & landingpage.js
+
 
 Next:-
 remove logins.json (

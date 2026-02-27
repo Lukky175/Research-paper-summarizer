@@ -74,7 +74,7 @@ function LandingPage() {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        `${process.env.REACT_APP_API_URL}/summarize`,
+        "/summarize",
         {
           method: "POST",
           headers: {
