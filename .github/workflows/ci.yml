@@ -53,10 +53,10 @@ jobs:
           cd research-summarizer-k8s
 
           # Update frontend image
-          sed -i "s|research-summarizer-frontend:.*|research-summarizer-frontend:${IMAGE_TAG}|g" frontend/frontend-deployment.yaml
+          sed -i "s|research-summarizer-frontend:.*|research-summarizer-frontend:${IMAGE_TAG}|g" base/frontend/frontend-deployment.yaml
 
           # Update backend image
-          sed -i "s|research-summarizer-backend:.*|research-summarizer-backend:${IMAGE_TAG}|g" backend/backend-deployment.yaml
+          sed -i "s|research-summarizer-backend:.*|research-summarizer-backend:${IMAGE_TAG}|g" base/backend/backend-deployment.yaml
 
           git config user.name "github-actions"
           git config user.email "actions@github.com"

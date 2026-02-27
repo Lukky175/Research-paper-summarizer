@@ -1,7 +1,5 @@
 This Version: -> 
-Fixed API Calling in Login.js / register.js & landingpage.js
-
-
+Fixed Pipeline (Image tag updation was pointing as per old repo structure.)
 Next:-
 remove logins.json (
 
