@@ -1,6 +1,7 @@
 This Version: -> 
-Fixed Pipeline (Image tag updation was pointing as per old repo structure.)
-Next:-
+    Updated server.js to support new gemini sdk (response).
+    
+Next Version:-
 remove logins.json (
 
 we have to delete this file and create a new one with the same name, but with the following content:
