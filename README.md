@@ -11,6 +11,33 @@ Students 📚
 Researchers 🧪
 Developers 👨‍💻
 Anyone who wants quick insights from long documents
+✨ Key Features
+🔐 User Authentication
+Secure login & registration system
+Passwords are encrypted using hashing
+JWT-based authentication for protected routes
+📄 PDF Upload & Text Extraction
+Upload research papers in PDF format
+Automatically extracts text from all pages
+Uses PDF.js for accurate extraction
+🤖 AI-Powered Summarization
+Uses Google Gemini API for generating summaries
+Converts long, complex text into easy-to-understand summaries
+Supports conversational interaction (chat-style UI)
+💬 Chat-Based Interface
+Users interact with the system like a chatbot
+Can ask questions or request summaries
+Maintains conversation flow
+🌐 Full Stack Architecture
+Frontend: React.js
+Backend: Node.js + Express
+Database: MongoDB
+AI Integration: Gemini API
+🐳 Docker Support
+Dockerized setup for easy deployment
+Includes docker-compose for multi-service setup
+
+
 
 This Version: -> 
     Updated server.js to support new gemini sdk (response).
