@@ -1,3 +1,17 @@
+📄 Research Paper Summarizer
+🚀 Overview
+
+The Research Paper Summarizer is a full-stack web application that helps users quickly understand long research papers by generating concise summaries using AI.
+
+Instead of reading an entire PDF (which can take hours), users can simply upload a paper or paste text, and the app will extract the content and generate a simplified summary in seconds.
+
+This project is designed to be useful for:
+
+Students 📚
+Researchers 🧪
+Developers 👨‍💻
+Anyone who wants quick insights from long documents
+
 This Version: -> 
     Updated server.js to support new gemini sdk (response).
     
