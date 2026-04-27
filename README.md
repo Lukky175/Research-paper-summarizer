@@ -36,6 +36,41 @@ AI Integration: Gemini API
 🐳 Docker Support
 Dockerized setup for easy deployment
 Includes docker-compose for multi-service setup
+🏗️ Project Structure
+Research-paper-summarizer-main/
+│
+├── backend/
+│   ├── server.js          # Main backend server
+│   ├── package.json
+│   ├── Dockerfile
+│   └── logins.json
+│
+├── frontend/
+│   ├── src/
+│   │   ├── landingpage/   # Main summarizer UI
+│   │   ├── pages/         # Login & Register pages
+│   │   ├── NavigationBar/
+│   │   └── RouteProtection/
+│   ├── public/
+│   ├── package.json
+│   └── Dockerfile
+│
+├── docker-compose.yml
+├── package.json
+└── README.md
+⚙️ How It Works (Simple Explanation)
+User logs into the app
+Uploads a research paper (PDF) OR enters text
+The system:
+Extracts text from the PDF
+Sends it to the AI model
+AI processes the content and generates a summary
+The summary is displayed in a chat-like interface
+
+👉 In short:
+PDF → Text → AI → Summary
+
+
 
 
 
